@@ -1,4 +1,4 @@
-# Docker Service #
+# Spring Boot Actuator & Logging #
 The service will create an endpoint for logging of all levels.
 
 # Code
@@ -90,3 +90,6 @@ Browser at: http://localhost:8080/log
 2020-03-22 06:09:27.765  WARN 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : WARNING message
 2020-03-22 06:09:27.765 ERROR 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : ERROR message
 ```
+
+# More
+The easy way to change the loggers level by using Spring Boot Admin
