@@ -1,28 +1,24 @@
 package com.hoangdieuctu.boot.docker;
 
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@SpringBootApplication
 public class ServerApplication {
 
-    static String timeConversion(String s) {
-        String f = s.substring(0, s.length() - 2);
-        String[] split = f.split(":");
-
-        int hour = Integer.parseInt(split[0]);
-        if (s.endsWith("PM") && hour != 12) {
-            hour += 12;
-        }
-        if (s.endsWith("AM") && hour == 12) {
-            hour = 0;
-        }
-
-        return String.format("%02d:%s:%s", hour, split[1], split[2]);
+    @ResponseBody
+    @GetMapping("/hello")
+    public String hello() {
+        return "Say Hello!";
     }
-
 
     public static void main(String[] args) {
-        System.out.println(timeConversion("07:05:45PM"));
-        System.out.println(timeConversion("07:05:45AM"));
-        System.out.println(timeConversion("12:00:00AM"));
-        System.out.println(timeConversion("12:00:00PM"));
+        SpringApplication.run(ServerApplication.class, args);
     }
+
 }
