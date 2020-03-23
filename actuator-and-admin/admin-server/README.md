@@ -1,23 +1,15 @@
-# Spring Boot Actuator & Logging #
-The service will create an endpoint for logging of all levels.
+# Spring Boot Admin Server #
+Spring Boot Admin Server is a web application, used for managing and monitoring Spring Boot applications. 
+Each application is considered as a client and registers to the admin server. 
+Behind the scenes, the magic is given by the Spring Boot Actuator endpoints.
 
 # Code
+Add the annotation *@EnableAdminServer*
+
 ```java
-@RestController
+@EnableAdminServer
 @SpringBootApplication
 public class ServerApplication {
-
-    private static Logger logger = LoggerFactory.getLogger(ServerApplication.class);
-
-    @ResponseBody
-    @GetMapping("/log")
-    public void log() {
-        logger.trace("TRACE message");
-        logger.debug("DEBUG message");
-        logger.info("INFO message");
-        logger.warn("WARNING message");
-        logger.error("ERROR message");
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
@@ -27,69 +19,27 @@ public class ServerApplication {
 ```
 
 # Dependencies
-Add *spring-boot-starter-actuator*
+Add *spring-boot-admin-starter-server*
 ```xml
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-server</artifactId>
+    <version>2.2.2</version>
 </dependency>
 ```
 
 # Config
-Starting from Spring Boot 2.x, most of actuator endpoints are disabled by default.
-Enable loggers actuator enpoints.
-
-```properties
-management.endpoints.web.exposure.include=loggers
-management.endpoint.loggers.enabled=true
-```
-
-# Logger levels
-```
-ALL < DEBUG < INFO < WARN < ERROR < FATAL < OFF
+```yaml
+server.port=10010
 ```
 
 # Testing
-**Default logger level is INFO**
 
-Browser at: http://localhost:8080/actuator/loggers/com.hoangdieuctu.boot.actuator
+Browser at: http://localhost:10010
 
-*====>*
-```json
-{
-  "configuredLevel": null,
-  "effectiveLevel": "INFO"
-}
-```
-
-Browser at: http://localhost:8080/log
-
-*====>*
-```
-2020-03-22 06:07:18.863  INFO 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : INFO message
-2020-03-22 06:07:18.863  WARN 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : WARNING message
-2020-03-22 06:07:18.863 ERROR 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : ERROR message
-```
-
-**Change the logger level to TRACE**
-
-POST: http://localhost:8080/actuator/loggers/com.hoangdieuctu.boot.actuator
-```json
-{
-  "configuredLevel": "TRACE"
-}
-```
-
-Browser at: http://localhost:8080/log
-
-*====>*
-```
-2020-03-22 06:09:27.764 TRACE 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : TRACE message
-2020-03-22 06:09:27.765 DEBUG 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : DEBUG message
-2020-03-22 06:09:27.765  INFO 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : INFO message
-2020-03-22 06:09:27.765  WARN 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : WARNING message
-2020-03-22 06:09:27.765 ERROR 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : ERROR message
-```
+![picture](admin-server.png)
 
 # More
-The easy way to change the loggers level by using Spring Boot Admin
+
+With the Spring Boot Admin we can do lot of things.
+![picture](detail.png)

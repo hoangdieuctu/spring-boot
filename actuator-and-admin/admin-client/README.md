@@ -1,5 +1,6 @@
-# Spring Boot Actuator & Logging #
-The service will create an endpoint for logging of all levels.
+# Spring Boot Admin Client #
+This is just a Spring Boot application. 
+This create an endpoint for validate logging level is managed by Spring Boot Admin server.
 
 # Code
 ```java
@@ -9,7 +10,6 @@ public class ServerApplication {
 
     private static Logger logger = LoggerFactory.getLogger(ServerApplication.class);
 
-    @ResponseBody
     @GetMapping("/log")
     public void log() {
         logger.trace("TRACE message");
@@ -27,69 +27,76 @@ public class ServerApplication {
 ```
 
 # Dependencies
-Add *spring-boot-starter-actuator*
+Add *spring-boot-admin-starter-client* and it required *spring-boot-starter-actuator*
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-actuator</artifactId>
 </dependency>
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-client</artifactId>
+    <version>2.2.2</version>
+</dependency>
 ```
 
 # Config
 Starting from Spring Boot 2.x, most of actuator endpoints are disabled by default.
-Enable loggers actuator enpoints.
+Enable loggers actuator endpoints.
 
-```properties
-management.endpoints.web.exposure.include=loggers
-management.endpoint.loggers.enabled=true
+```yaml
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
 ```
 
-# Logger levels
+Config the location of Spring Boot Admin server and the application name.
+```yaml
+spring.application.name=admin-client
+spring.boot.admin.client.url=http://localhost:10010
 ```
-ALL < DEBUG < INFO < WARN < ERROR < FATAL < OFF
+
+Config server port
+```yaml
+server.port=9090
 ```
 
 # Testing
-**Default logger level is INFO**
+*Starting Spring Boot Admin server and client*
 
-Browser at: http://localhost:8080/actuator/loggers/com.hoangdieuctu.boot.actuator
+Browser at: http://localhost:10010
 
-*====>*
-```json
-{
-  "configuredLevel": null,
-  "effectiveLevel": "INFO"
-}
-```
+![picture](admin-client.png)
 
-Browser at: http://localhost:8080/log
+Browser at: http://localhost:9090/log
 
 *====>*
 ```
-2020-03-22 06:07:18.863  INFO 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : INFO message
-2020-03-22 06:07:18.863  WARN 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : WARNING message
-2020-03-22 06:07:18.863 ERROR 14079 --- [nio-8080-exec-5] c.h.boot.actuator.ServerApplication      : ERROR message
+2020-03-24 06:41:13.324  INFO 38100 --- [nio-9090-exec-4] c.h.boot.actuator.ServerApplication      : INFO message
+2020-03-24 06:41:13.325  WARN 38100 --- [nio-9090-exec-4] c.h.boot.actuator.ServerApplication      : WARNING message
+2020-03-24 06:41:13.325 ERROR 38100 --- [nio-9090-exec-4] c.h.boot.actuator.ServerApplication      : ERROR message
 ```
 
 **Change the logger level to TRACE**
 
-POST: http://localhost:8080/actuator/loggers/com.hoangdieuctu.boot.actuator
+*1. By using actuator endpoint:*
+POST: http://localhost:9090/actuator/loggers/com.hoangdieuctu.boot.actuator
 ```json
 {
   "configuredLevel": "TRACE"
 }
 ```
 
+*2. By using Spring Boot Admin server*
+![picture](change-level.png)
+
+
 Browser at: http://localhost:8080/log
 
 *====>*
 ```
-2020-03-22 06:09:27.764 TRACE 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : TRACE message
-2020-03-22 06:09:27.765 DEBUG 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : DEBUG message
-2020-03-22 06:09:27.765  INFO 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : INFO message
-2020-03-22 06:09:27.765  WARN 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : WARNING message
-2020-03-22 06:09:27.765 ERROR 14079 --- [nio-8080-exec-2] c.h.boot.actuator.ServerApplication      : ERROR message
+2020-03-24 06:43:24.139 TRACE 38100 --- [nio-9090-exec-6] c.h.boot.actuator.ServerApplication      : TRACE message
+2020-03-24 06:43:24.139 DEBUG 38100 --- [nio-9090-exec-6] c.h.boot.actuator.ServerApplication      : DEBUG message
+2020-03-24 06:43:24.139  INFO 38100 --- [nio-9090-exec-6] c.h.boot.actuator.ServerApplication      : INFO message
+2020-03-24 06:43:24.139  WARN 38100 --- [nio-9090-exec-6] c.h.boot.actuator.ServerApplication      : WARNING message
+2020-03-24 06:43:24.139 ERROR 38100 --- [nio-9090-exec-6] c.h.boot.actuator.ServerApplication      : ERROR message
 ```
-
-# More
-The easy way to change the loggers level by using Spring Boot Admin

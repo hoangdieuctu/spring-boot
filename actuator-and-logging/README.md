@@ -37,7 +37,7 @@ Add *spring-boot-starter-actuator*
 
 # Config
 Starting from Spring Boot 2.x, most of actuator endpoints are disabled by default.
-Enable loggers actuator enpoints.
+Enable loggers actuator endpoints.
 
 ```properties
 management.endpoints.web.exposure.include=loggers
