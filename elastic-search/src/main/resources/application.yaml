@@ -1,0 +1,13 @@
+logging:
+  level:
+    com:
+      hoangdieuctu: DEBUG
+
+es:
+  indexes:
+    user:
+      name: user
+      type: _doc
+    student:
+      name: student
+      type: _doc
