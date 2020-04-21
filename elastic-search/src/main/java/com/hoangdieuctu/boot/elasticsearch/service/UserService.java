@@ -1,50 +1,41 @@
 package com.hoangdieuctu.boot.elasticsearch.service;
 
 import com.hoangdieuctu.boot.elasticsearch.model.User;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import com.hoangdieuctu.boot.elasticsearch.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
-public class UserService extends ElasticsearchWrapperService<User> {
+public class UserService {
 
-    @Value("${es.indexes.user.name}")
-    private String indexName;
+    @Autowired
+    private UserRepository userRepository;
 
-    @Value("${es.indexes.user.type}")
-    private String indexType;
-
-    public UserService() {
-        super(User.class);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
-    @Override
-    public String getIndexName() {
-        return indexName;
+    public List<User> getAll() {
+        return userRepository.getAll();
     }
 
-    @Override
-    public String getIndexType() {
-        return indexType;
+    public List<User> getByName(String name) {
+        return userRepository.getByName(name);
     }
 
-    public User index(User user) throws IOException {
-        return super.index(user.getId(), user);
+    public User update(String id, String name) {
+        User user = userRepository.get(id);
+        if (user == null) {
+            throw new NullPointerException("User not found");
+        }
+
+        user.setName(name);
+        return userRepository.update(id, user);
     }
 
-    public List<User> getByName(String name) throws IOException {
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        boolQueryBuilder.must(new TermQueryBuilder("name", name));
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(boolQueryBuilder);
-        searchSourceBuilder.size(MAX_SIZE);
-
-        return super.search(searchSourceBuilder);
+    public void delete(String id) {
+        userRepository.delete(id);
     }
 }

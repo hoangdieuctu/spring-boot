@@ -33,21 +33,20 @@ public class ElasticsearchRepository {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
-    public IndexResponse index(String indexName, String indexType, String id, String obj) throws IOException {
+    public IndexResponse index(String indexName, String id, String obj) throws IOException {
         logger.debug("Source: {}", obj);
 
-        IndexRequest indexRequest = new IndexRequest(
-                indexName,
-                indexType,
-                id).setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
-        indexRequest.source(obj, XContentType.JSON);
+        IndexRequest indexRequest = new IndexRequest(indexName)
+                .id(id)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                .source(obj, XContentType.JSON);
         return restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
     }
 
-    public GetResponse get(String indexName, String indexType, String id) throws IOException {
+    public GetResponse get(String indexName, String id) throws IOException {
         logger.debug("Get: {}", id);
 
-        GetRequest getRequest = new GetRequest(indexName, indexType, id);
+        GetRequest getRequest = new GetRequest(indexName, id);
         return restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
     }
 
@@ -58,31 +57,30 @@ public class ElasticsearchRepository {
     public SearchResponse search(String indexName, SearchSourceBuilder searchSourceBuilder, Scroll scroll) throws IOException {
         logger.debug("Search: {}", searchSourceBuilder);
 
-        SearchRequest request = new SearchRequest(indexName);
-        request.source(searchSourceBuilder);
+        SearchRequest request = new SearchRequest(indexName).source(searchSourceBuilder);
         if (scroll != null) {
             request.scroll(scroll);
         }
         return restHighLevelClient.search(request, RequestOptions.DEFAULT);
     }
 
-    public UpdateResponse update(String indexName, String indexType, String id, String source) throws IOException {
+    public UpdateResponse update(String indexName, String id, String source) throws IOException {
         logger.debug("Update: id={}, source={}", id, source);
 
-        UpdateRequest updateRequest = new UpdateRequest(
-                indexName,
-                indexType,
-                id).setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
-        updateRequest.doc(source, XContentType.JSON);
-        updateRequest.fetchSource(true);
-
+        UpdateRequest updateRequest = new UpdateRequest()
+                .index(indexName)
+                .id(id)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                .fetchSource(true)
+                .doc(source, XContentType.JSON);
         return restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
     }
 
-    public DeleteResponse delete(String indexName, String indexType, String id) throws IOException {
+    public DeleteResponse delete(String indexName, String id) throws IOException {
         logger.debug("Delete: {}", id);
 
-        DeleteRequest delRequest = new DeleteRequest(indexName, indexType, id);
+        DeleteRequest delRequest = new DeleteRequest(indexName, id)
+                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         return restHighLevelClient.delete(delRequest, RequestOptions.DEFAULT);
     }
 

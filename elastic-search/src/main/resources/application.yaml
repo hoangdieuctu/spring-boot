@@ -5,9 +5,4 @@ logging:
 
 es:
   indexes:
-    user:
-      name: user
-      type: _doc
-    student:
-      name: student
-      type: _doc
+    user: user
